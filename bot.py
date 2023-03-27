@@ -88,6 +88,20 @@ def main():
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
+    def handle_callback_query(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+
+    action = query.data
+
+    if action.startswith("buy"):
+        handle_payment_method_selection(update, context, action)
+    elif action.startswith("confirm"):
+        handle_payment_confirmation(update, context, action)
+    elif action.startswith("paid"):
+        handle_payment_paid(update, context)
+    elif action == "cancel":
+        start(update, context)
     dp.add_handler(CallbackQueryHandler(handle_callback_query))
     dp.add_handler(MessageHandler(Filters.text, handle_amount_message))
 
@@ -293,4 +307,3 @@ def handle_text(update, context):
         send_btc_transaction(update, context)
 
 dp.add_handler(MessageHandler(Filters.text, handle_text))
-
